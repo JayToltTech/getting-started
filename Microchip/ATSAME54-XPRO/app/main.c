@@ -3,15 +3,12 @@
 
 #include <stdio.h>
 
-#include "tx_api.h"
-
 #include "nx_driver_same54.h"
 
 #include "board_init.h"
 #include "networking.h"
 #include "sntp_client.h"
 
-#include "legacy/mqtt.h"
 #include "nx_client.h"
 
 #define AZURE_THREAD_STACK_SIZE 4096
@@ -32,14 +29,8 @@ static void azure_thread_entry(ULONG parameter)
         printf("ERROR: Failed to initialize the network (0x%08x)\r\n", status);
     }
 
-#ifdef ENABLE_LEGACY_MQTT
-    else if ((status = azure_iot_mqtt_entry(&nx_ip, &nx_pool, &nx_dns_client, sntp_time_get)))
-#else
-    else if ((status = azure_iot_nx_client_entry(&nx_ip, &nx_pool, &nx_dns_client, sntp_time)))
-#endif
-    {
-        printf("Failed to run Azure IoT (0x%08x)\r\n", status);
-    }
+    set_led_state(true);
+
 }
 
 void tx_application_define(void* first_unused_memory)
